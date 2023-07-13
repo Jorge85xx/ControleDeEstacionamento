@@ -10,7 +10,7 @@ public class ParkingSpotService {
 	//@Autowired //injeção de dependencia pode ser pelo comentario ou pelo construtor
 	ParkingSpotRepository parkingRepository;
 	
-	public void setParkingRepository(ParkingSpotRepository parkingRepository) {            //construtor
+	public void setParkingRepository(ParkingSpotRepository parkingRepository) {//construtor
 		this.parkingRepository = parkingRepository;
 	}
 	
