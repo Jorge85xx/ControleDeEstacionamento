@@ -1,21 +1,52 @@
 package com.api.controledeestacionamento.controllers;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+
+import org.springframework.beans.BeanUtils;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.api.controledeestacionamento.dtos.ParkingSpotDto;
+import com.api.controledeestacionamento.models.ParkingSpotModel;
 import com.api.controledeestacionamento.services.ParkingSpotService;
 
-@RestController //apiRest, vai trazer solicitações http e retorna diretamente o corpo da resposta em formatos especificos
-@CrossOrigin(origins = "*", maxAge = 3600) //políticas de compartilhamento de recursos entre origens diferentes.
-//permite que todas as origens (*) acessem os recursos desse controlador e define um tempo de cache máximo de 3600 segundos (1 hora).
-@RequestMapping("/parking-spot") // Ela define o caminho do URL que será usado para acessar o método
-public class ParkingSpotController {
-	
-	 ParkingSpotService parkingSpotService;
-	 
-	 public void ParkingSpotService(ParkingSpotService parkingSpotService) {
-		this.parkingSpotService = parkingSpotService;
-	}
+import jakarta.validation.Valid;
 
+@RestController
+@CrossOrigin(origins = "*", maxAge = 3600)
+@RequestMapping("/parking-spot")
+public class ParkingSpotController {
+
+    private final ParkingSpotService parkingSpotService;
+
+    public ParkingSpotController(ParkingSpotService parkingSpotService) {
+        this.parkingSpotService = parkingSpotService;
+    }
+
+    @PostMapping
+    public ResponseEntity<Object> saveParkingSpot(@RequestBody @Valid ParkingSpotDto parkingSpotDto) {
+        if (parkingSpotService.existsByLicensePlateCar(parkingSpotDto.getLicensePlateCar())) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Conflito: este número de placa já está em uso");
+        }
+        if (parkingSpotService.existsByParkingSpotNumber(parkingSpotDto.getParkingSpotNumber())) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Conflito: Vaga já está sendo usada");
+        }
+        if (parkingSpotService.existsByApartmentAndBlock(parkingSpotDto.getApartment(), parkingSpotDto.getBlock())) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Conflito: apartamento/bloco já está registrado");
+        }
+        ParkingSpotModel parkingSpotModel = new ParkingSpotModel();
+        BeanUtils.copyProperties(parkingSpotDto, parkingSpotModel);
+        parkingSpotModel.setRegistrationDate(LocalDateTime.now(ZoneId.of("UTC")));
+        return ResponseEntity.status(HttpStatus.CREATED).body(parkingSpotService.save(parkingSpotModel));
+    }
+
+    public ParkingSpotService getParkingSpotService() {
+        return parkingSpotService;
+    }
 }

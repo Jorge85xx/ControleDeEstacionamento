@@ -1,7 +1,7 @@
 package com.api.controledeestacionamento.models;
 
 import java.io.Serializable;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import jakarta.persistence.Column;
@@ -13,34 +13,38 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "TB_PARKING_SPOT")
-public class ParkingSpotModel implements Serializable{ //conversão
+public class ParkingSpotModel implements Serializable { // conversão
 	private static final long serialVersionUID = 1L;
-	
+
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)//gerar Id de forma automatica
-	private UUID id; //UUID é um tipo melhor para o id
-   //coluna(pode ser nulo?, tem que ser unico?, tamanho da String)
-	@Column(nullable = false, unique = true, length = 7) 
+	@GeneratedValue(strategy = GenerationType.AUTO) // gerar Id de forma automatica
+	private UUID id; // UUID é um tipo melhor para o id
+
+	@Column(nullable = false, unique = true, length = 10)
+	private String parkingSpotNumber;
+
+	// coluna(pode ser nulo?, tem que ser unico?, tamanho da String)
+	@Column(nullable = false, unique = true, length = 7)
 	private String licensePlateCar;
-	
+
 	@Column(nullable = false, length = 50)
 	private String brandCar;
-	
+
 	@Column(nullable = false, length = 50)
 	private String modelCar;
-	
+
 	@Column(nullable = false, length = 50)
 	private String colorCar;
-	
+
 	@Column(nullable = false)
-	private LocalDate registrationDate;
-	
+	private LocalDateTime registrationDate;
+
 	@Column(nullable = false, length = 100)
 	private String responsibleName;
-	
+
 	@Column(nullable = false, length = 30)
 	private String apartment;
-	
+
 	@Column(nullable = false, length = 30)
 	private String block;
 
@@ -84,12 +88,12 @@ public class ParkingSpotModel implements Serializable{ //conversão
 		this.colorCar = colorCar;
 	}
 
-	public LocalDate getRegistrationDate() {
+	public LocalDateTime getRegistrationDate() {
 		return registrationDate;
 	}
 
-	public void setRegistrationDate(LocalDate registrationDate) {
-		this.registrationDate = registrationDate;
+	public void setRegistrationDate(LocalDateTime localDateTime) {
+		this.registrationDate = localDateTime;
 	}
 
 	public String getResponsibleName() {
@@ -119,11 +123,14 @@ public class ParkingSpotModel implements Serializable{ //conversão
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}
-	
-	
-	
-	
-	
-	
+
+	public String getParkingSpotNumber() {
+		return parkingSpotNumber;
+	}
+
+	public void setParkingSpotNumber(String parkingSpotNumber) {
+		this.parkingSpotNumber = parkingSpotNumber;
+	}
+
 
 }
